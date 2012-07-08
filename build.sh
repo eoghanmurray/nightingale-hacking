@@ -140,9 +140,6 @@ cd ../
 
 cd $buildir
 
-# hopefully we have python2 on this system
-export PYTHON="$(which python2 2>/dev/null || which python)"
-
 make -f nightingale.mk clobber
 make -f nightingale.mk
 
