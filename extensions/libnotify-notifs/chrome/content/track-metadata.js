@@ -70,6 +70,8 @@ lnNotifs = {
         var mm = this.mmService;
         var that = this;
 
+        var prevAlbum = '';
+
         this.mmService.addListener({
             onMediacoreEvent: function(event) {
                 // Get mediacore event
@@ -79,6 +81,8 @@ lnNotifs = {
                     // Check if notifications are enabled
                     var notifsEnabled = lnNotifs.prefs.getBoolPref("enableNotifications");
                     lnNotifs.lnNotifsService.EnableNotifications(notifsEnabled);
+
+                    var notifySongChangeWithinAlbum = false; // TODO: get another boolean pref here called "notifySongChangeWithinAlbum" which has a default of False
 
                     var curItem = that.mmService.sequencer.currentItem;
                     // Don't notify for mediacore sequencing oddities
@@ -100,8 +104,10 @@ lnNotifs = {
                     var album = that.strConv.ConvertFromUnicode(curItem.getProperty(SBProperties.albumName));
                     var track = that.strConv.ConvertFromUnicode(curItem.getProperty(SBProperties.trackName));
                     var timeout = that.prefs.getIntPref("notificationTimeout");
-
-                    that.lnNotifsService.TrackChangeNotify(track, artist, album, fileURI, timeout);
+                    if (notifySongChangeWithinAlbum || album != prevAlbum) {
+                        that.lnNotifsService.TrackChangeNotify(track, artist, album, fileURI, timeout);
+                        prevAlbum = album;
+                    }
                 }
             }
         });
